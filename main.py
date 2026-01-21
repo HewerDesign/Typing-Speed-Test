@@ -32,13 +32,13 @@ text_sample = random.choice(text_samples)
 def wpm():
     global words_per_minute
     words = len(text_sample.split())
-    start = time.time()
     end = time.time()
-    timer = end - start
-    words_per_minute = float(words / timer)
-    print(f"You typed {words} words in {timer} seconds. That is equivalent to {words_per_minute} words per minute!")
+    time_taken = end - start
+    words_per_minute = float(words / time_taken * 60)
+    print(f"You typed {words} words in {time_taken} seconds. That is equivalent to {words_per_minute} words per minute!")
 
 print(text_sample)
+start = time.time()
 typing = input("Copy the above text: \n")
 
 if typing.lower() == text_sample.lower():
