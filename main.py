@@ -14,31 +14,34 @@ import time
 import tkinter as tk
 from tkinter import ttk
 
-# TODO: Keep track of how long it takes to type the given sample, in seconds. Use the number of words to calculate WPM.
-# TODO: Count time from first key-press until enter is hit.
 
-# TODO: Create some preset samples if a suitable length, accessed randomly and printed on screen.
+root = tk.Tk()
+root.title("Typing Speed Assessment")
+root.geometry("800x600")
+root.option_add("*Label.Font", "consolas 15")
+root.option_add("*Button.Font", "consolas 15")
 
-# TODO: Add a textbox to allow the user to copy the sample. Check for errors? Add a time penalty per uncorrected error?
-
-
-text_samples = [
-"The quick brown fox jumps over the lazy dog.",
-"How much wood would a woodchuck chuck if a woodchuck could chuck wood?",
-"If Peter Piper picked a peck of pickled peppers, where's the peck of pickled peppers Peter Piper picked?"
+text_options = [
+    "The quick brown fox jumps over the lazy dog.",
+    "How much wood would a woodchuck chuck if a woodchuck could chuck wood?",
+    "If Peter Piper picked a peck of pickled peppers, where's the peck of pickled peppers Peter Piper picked?"
 ]
 
-text_sample = random.choice(text_samples)
+text_sample = random.choice(text_options).lower()
 words_per_minute = float
 start_time = 0
+entered_text = tk.StringVar()
+score = ""
+
 
 def start_measurement():
     global start_time
     start_time = time.time()
+    entry.focus()
 
 
 def end_measurement():
-    global start_time, words_per_minute
+    global start_time, words_per_minute, score
     if start_time == 0:
         print("Timer not started")
         return
@@ -47,26 +50,35 @@ def end_measurement():
     elapsed = end_time - start_time
     words = len(text_sample.split())
     words_per_minute = float(words / elapsed * 60)
-    print(f"You typed {words} words in {elapsed} seconds. That is equivalent to {words_per_minute} words per minute!")
-    start_time = 0  # Reset
+    score = f"You typed {words} words in {elapsed} seconds. That is equivalent to {words_per_minute} words per minute!"
+    print(score)
+    score_label = ttk.Label(root, text=score, anchor='center')
+    score_label.pack()
+
 
 def play():
-    global start_time
+    global start_time, entered_text
+
     print(text_sample)
     start_measurement()
-    typing = input("Copy the above text: \n")
+    entered_text = input("Copy the above text: \n")
 
-    if typing.lower() == text_sample.lower():
+    if entered_text.lower() == text_sample:
         end_measurement()
+    else:
+        print("Wrong input!")
 
-# root = Tk()
-# root.title("Typing Speed Assessment")
-#
-# mainframe = ttk.Frame(root, padding=(3, 3, 12, 12))
-# mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
-#
-# ttk.Label(mainframe, text=text_sample).grid(column=2, row=2, sticky=(W, E))
-#
-# root.mainloop()
 
-play()
+
+instruction = ttk.Label(root, text="Copy the following text, including punctuation: ", anchor='center')
+text_ = ttk.Label(root, text=text_sample, anchor='center')
+start_button = ttk.Button(root, text="Start", command=start_measurement)
+entry = ttk.Entry(root, textvariable=entered_text)
+
+instruction.pack()
+text_.pack()
+entry.pack()
+start_button.pack()
+entry.bind("<Return>", (lambda event: end_measurement()))
+
+root.mainloop()
